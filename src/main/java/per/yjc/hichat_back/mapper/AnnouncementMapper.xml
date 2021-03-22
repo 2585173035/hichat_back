@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.all.models.announcementAndPay.mapper.AnnouncementMapper">
+    <insert id="insertOne" >
+        insert into tb_invitation(user_id, title, content, type, create_time, ann_degree)
+        values (#{ann.userId},#{ann.title},#{ann.content},1,#{ann.createTime},#{ann.annDegree})
+    </insert>
+    <insert id="insertRelation" >
+        insert into tb_user_invitation(user_id, invitation_id)
+        values (#{user_id},#{invitation_id})
+    </insert>
+    <update id="update">
+        update tb_invitation set
+        tb_invitation.content = #{ann.content},
+        tb_invitation.title = #{ann.title},
+        tb_invitation.ann_degree = #{ann.annDegree}
+        where tb_invitation.invitation_id = #{ann.invitationId}
+    </update>
+
+    <update id="delete">
+        update tb_invitation set
+        tb_invitation.type = 3
+        where tb_invitation.invitation_id = #{id}
+    </update>
+
+    <select id="getDetail" resultType="com.all.models.announcementAndPay.pojo.Announcement">
+        select
+        invitation_id as 'invitationId',
+        create_time as 'createTime',
+        title as 'title',
+        content as 'content',
+        user_id as 'userId',
+        ann_degree as 'annDegree',
+        praise_points as 'praisePoints',
+        view_points as 'viewPoints' from tb_invitation where tb_invitation.invitation_id = #{id}
+    </select>
+
+    <select id="getList" resultType="com.all.models.announcementAndPay.pojo.Announcement">
+        select
+        invitation_id as 'invitationId',
+        create_time as 'createTime',
+        title as 'title',
+        user_id as 'userId',
+        ann_degree as 'annDegree',
+        praise_points as 'praisePoints',
+        view_points as 'viewPoints'
+        from tb_invitation
+        where type = 1
+    </select>
+
+    <select id="getListByTitle" resultType="com.all.models.announcementAndPay.pojo.Announcement">
+        select
+        invitation_id as 'invitationId',
+        create_time as 'createTime',
+        title as 'title',
+        user_id as 'userId',
+        ann_degree as 'annDegree',
+        praise_points as 'praisePoints',
+        view_points as 'viewPoints'
+        from tb_invitation
+        where type = 1 and tb_invitation.title like concat('%',#{title},'%')
+    </select>
+
+    <update id="praise">
+        update tb_invitation set praise_points = praise_points+1
+        where tb_invitation.invitation_id = #{id}
+    </update>
+
+    <update id="access">
+        update tb_invitation set view_points = view_points+1
+        where tb_invitation.invitation_id = #{id}
+    </update>
+
+    <select id="isPraise" resultType="integer">
+        select count(*) from tb_user_invitation where invitation_id = #{id} and user_id = #{userId}
+    </select>
+
+
+</mapper>
